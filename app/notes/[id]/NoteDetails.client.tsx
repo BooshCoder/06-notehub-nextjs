@@ -3,10 +3,15 @@
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "../../../lib/api";
+import type { Note } from "../../../types/note";
 import Link from "next/link";
 import css from "./NoteDetails.module.css";
 
-export default function NoteDetailsClient() {
+interface NoteDetailsClientProps {
+  initialData?: Note;
+}
+
+export default function NoteDetailsClient({ initialData }: NoteDetailsClientProps) {
   const params = useParams();
   const noteId = params.id as string;
 
@@ -14,6 +19,8 @@ export default function NoteDetailsClient() {
     queryKey: ["note", noteId],
     queryFn: () => fetchNoteById(noteId),
     enabled: !!noteId,
+    initialData: initialData,
+    placeholderData: (previousData) => previousData,
   });
 
   if (isLoading) {
