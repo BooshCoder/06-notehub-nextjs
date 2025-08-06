@@ -21,6 +21,7 @@ export default function NoteDetailsClient({ initialData }: NoteDetailsClientProp
     enabled: !!noteId,
     initialData: initialData,
     placeholderData: (previousData) => previousData,
+    refetchOnMount: false,
   });
 
   if (isLoading) {
