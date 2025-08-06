@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchNotes } from "../../lib/api";
+import { fetchNotes, type FetchNotesResponse } from "../../lib/api";
 import NoteList from "../../components/NoteList/NoteList";
 import SearchBox from "../../components/SearchBox/SearchBox";
 import Pagination from "../../components/Pagination/Pagination";
@@ -11,19 +11,35 @@ import NoteForm from "../../components/NoteForm/NoteForm";
 import Link from "next/link";
 import styles from "../home.module.css";
 
-export default function NotesClient() {
+interface NotesClientProps {
+  initialData?: FetchNotesResponse;
+}
+
+export default function NotesClient({ initialData }: NotesClientProps) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1); // Скидаємо на першу сторінку при пошуку
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["notes", page, search],
-    queryFn: () => fetchNotes(page, 12, search),
+    queryKey: ["notes", page, debouncedSearch],
+    queryFn: () => fetchNotes(page, 12, debouncedSearch),
+    initialData: page === 1 && debouncedSearch === "" ? initialData : undefined,
+    placeholderData: (previousData) => previousData,
   });
 
   const handleSearch = (value: string) => {
     setSearch(value);
-    setPage(1); // Скидаємо на першу сторінку при пошуку
   };
 
   const handleCreateSuccess = () => {
