@@ -65,7 +65,7 @@ export default function NotesClient({ initialData }: NotesClientProps) {
         <SearchBox value={search} onChange={handleSearch} />
       </div>
 
-      {(isLoading || isError || data) && (
+      {(isLoading || isError || (data && data.notes.length > 0)) && (
         <NoteList
           notes={data?.notes || []}
           isLoading={isLoading}
@@ -73,7 +73,7 @@ export default function NotesClient({ initialData }: NotesClientProps) {
         />
       )}
 
-      {data && (
+      {data && data.totalPages > 1 && (
         <Pagination
           page={page}
           setPage={setPage}
