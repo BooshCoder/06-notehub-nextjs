@@ -7,11 +7,7 @@ import type { Note } from "../../../types/note";
 import Link from "next/link";
 import css from "./NoteDetails.module.css";
 
-interface NoteDetailsClientProps {
-  initialData?: Note;
-}
-
-export default function NoteDetailsClient({ initialData }: NoteDetailsClientProps) {
+export default function NoteDetailsClient() {
   const params = useParams();
   const noteId = params.id as string;
 
@@ -19,9 +15,10 @@ export default function NoteDetailsClient({ initialData }: NoteDetailsClientProp
     queryKey: ["note", noteId],
     queryFn: () => fetchNoteById(noteId),
     enabled: !!noteId,
-    initialData: initialData,
     placeholderData: (previousData) => previousData,
     refetchOnMount: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
   if (isLoading) {

@@ -65,11 +65,13 @@ export default function NotesClient({ initialData }: NotesClientProps) {
         <SearchBox value={search} onChange={handleSearch} />
       </div>
 
-      <NoteList
-        notes={data?.notes || []}
-        isLoading={isLoading}
-        isError={isError}
-      />
+      {(isLoading || isError || data) && (
+        <NoteList
+          notes={data?.notes || []}
+          isLoading={isLoading}
+          isError={isError}
+        />
+      )}
 
       {data && (
         <Pagination
